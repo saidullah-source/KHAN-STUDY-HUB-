@@ -16,7 +16,6 @@
         
         .neon-brand { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 20px #0ea5e9; background: linear-gradient(to right, #fff, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* Floating & Glowing Login Button */
         @keyframes float-glow {
             0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 0 25px #0ea5e9; }
             50% { transform: translateY(-25px) scale(1.05); box-shadow: 0 0 60px #38bdf8; }
@@ -27,7 +26,6 @@
             border: 2px solid #ffffff44;
         }
 
-        /* Ticker Animation */
         .ticker-container { background: linear-gradient(90deg, #0ea5e9, #1e40af); border-bottom: 4px solid #38bdf8; position: relative; z-index: 100; }
         .ticker-move { display: inline-block; white-space: nowrap; animation: ticker 55s linear infinite; font-weight: 900; letter-spacing: 1px; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -36,6 +34,8 @@
         .feature-icon-img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 0 5px #0ea5e9); }
         .hidden { display: none; }
     </style>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -131,7 +131,7 @@
         </div>
 
         <div id="memberView" class="hidden space-y-6 mb-12 animate-fade-in">
-            <button class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 p-5 rounded-[2rem] font-black text-xl text-black">
+            <button onclick="startPayment()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 p-5 rounded-[2rem] font-black text-xl text-black shadow-lg transform hover:scale-105 transition">
                 👑 UNLOCK PREMIUM ACCESS 👑
             </button>
             <div class="grid md:grid-cols-2 gap-4">
@@ -170,11 +170,31 @@
         </div>
     </div>
 
+    <div id="aiChat" class="fixed bottom-6 right-6 z-[100]">
+        <button onclick="toggleChat()" class="bg-gradient-to-tr from-sky-500 to-purple-600 w-14 h-14 rounded-full shadow-lg flex items-center justify-center border-2 border-white/20 animate-bounce">
+            <i class="fa-solid fa-robot text-xl text-white"></i>
+        </button>
+        <div id="chatBox" class="hidden absolute bottom-16 right-0 w-72 h-96 glass-card rounded-[2rem] overflow-hidden flex flex-col border border-sky-500/30">
+            <div class="bg-sky-500/20 p-4 flex justify-between items-center">
+                <span class="font-black text-[10px] uppercase tracking-widest text-sky-400">AI Exam Assistant</span>
+                <button onclick="toggleChat()"><i class="fa-solid fa-xmark text-gray-400"></i></button>
+            </div>
+            <div id="chatContent" class="flex-1 p-4 overflow-y-auto text-[10px] space-y-4 font-bold text-gray-300">
+                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10">Salam! Main Khan AI hun. Aapka exam kaisa chal raha hai?</div>
+            </div>
+            <div class="p-3 bg-black/50 flex gap-2">
+                <input id="aiInput" type="text" placeholder="Ask anything..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[9px] focus:outline-none">
+                <button onclick="askAI()" class="bg-sky-500 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            </div>
+        </div>
+    </div>
+
     <footer class="py-8 text-center text-gray-800 text-[10px] font-black tracking-widest">
         &copy; 2026 KHAN STUDY HUB | THE FUTURE OF EDUCATION
     </footer>
 
     <script>
+        // Typing Animation
         var typed = new Typed('#typed', {
             strings: ['Sabhi Board Exams Mein', 'Sabhi Sarkari Jobs Mein', 'Urdu Model Papers Se', '100% Selection Ke Sath'],
             typeSpeed: 60,
@@ -182,6 +202,7 @@
             loop: true
         });
 
+        // Shayari Logic
         const shayaris = [
             "Manzil unhi ko milti hai, jinke sapno mein jaan hoti hai.",
             "Waqt badalta hai, phir badlega, saara jahan apna hoga.",
@@ -193,11 +214,46 @@
             s = (s + 1) % shayaris.length;
             const box = document.getElementById('shayariBox');
             box.style.opacity = 0;
-            setTimeout(() => {
-                box.innerText = `"${shayaris[s]}"`;
-                box.style.opacity = 1;
-            }, 500);
+            setTimeout(() => { box.innerText = `"${shayaris[s]}"`; box.style.opacity = 1; }, 500);
         }, 5000);
+
+        // Payment Function
+        function startPayment() {
+            var options = {
+                "key": "rzp_test_PASTE_YOUR_KEY_HERE", // Kal subah yahan apni key paste karna
+                "amount": "4900", 
+                "name": "KHAN STUDY HUB",
+                "description": "Premium Exam Access",
+                "handler": function (response){ alert("Payment Success! ID: " + response.razorpay_payment_id); },
+                "prefill": { "name": document.getElementById('userName').innerText },
+                "theme": { "color": "#0ea5e9" }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+
+        // AI Chat Functions
+        function toggleChat() { document.getElementById('chatBox').classList.toggle('hidden'); }
+        
+        function askAI() {
+            const input = document.getElementById('aiInput');
+            const content = document.getElementById('chatContent');
+            if(input.value.trim() === "") return;
+
+            content.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-sky-500/30 p-2 rounded-xl rounded-tr-none border border-sky-500/40 text-white">${input.value}</div></div>`;
+            const query = input.value.toLowerCase();
+            input.value = "";
+
+            setTimeout(() => {
+                let reply = "Bhai, ye sawal mast hai! Iska pura detail hamare <b>Premium Notes</b> mein hai. Unlock karein!";
+                if(query.includes("hcf")) reply = "<b>HCF Trick:</b> Prime numbers ka product check karein. Formula: HCF x LCM = Product of Numbers.";
+                if(query.includes("urdu")) reply = "<b>Urdu Guide:</b> Grammar section mein 'Ghazal' aur 'Qawaid' par dhyan dein. Humne special model papers diye hain.";
+                if(query.includes("job")) reply = "<b>Job Alert:</b> Bihar Police ki bampat bharti aa rahi hai. Taiyari shuru rakhein!";
+
+                content.innerHTML += `<div class="flex justify-start mb-2"><div class="bg-white/5 p-2 rounded-xl rounded-tl-none border border-white/10"><i class="fa-solid fa-robot text-sky-400 mr-1"></i> ${reply}</div></div>`;
+                content.scrollTop = content.scrollHeight;
+            }, 1000);
+        }
     </script>
 </body>
 </html>

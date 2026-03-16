@@ -33,6 +33,8 @@
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
         .feature-icon-img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 0 5px #0ea5e9); }
         .hidden { display: none; }
+        .ai-message { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -174,17 +176,20 @@
         <button onclick="toggleChat()" class="bg-gradient-to-tr from-sky-500 to-purple-600 w-14 h-14 rounded-full shadow-lg flex items-center justify-center border-2 border-white/20 animate-bounce">
             <i class="fa-solid fa-robot text-xl text-white"></i>
         </button>
-        <div id="chatBox" class="hidden absolute bottom-16 right-0 w-72 h-96 glass-card rounded-[2rem] overflow-hidden flex flex-col border border-sky-500/30">
-            <div class="bg-sky-500/20 p-4 flex justify-between items-center">
-                <span class="font-black text-[10px] uppercase tracking-widest text-sky-400">AI Exam Assistant</span>
+        <div id="chatBox" class="hidden absolute bottom-16 right-0 w-72 h-96 glass-card rounded-[2rem] overflow-hidden flex flex-col border border-sky-500/30 shadow-2xl">
+            <div class="bg-sky-500/20 p-4 flex justify-between items-center border-b border-white/5">
+                <div class="flex flex-col">
+                    <span class="font-black text-[10px] uppercase tracking-widest text-sky-400">Khan AI Expert</span>
+                    <span class="text-[7px] text-green-400">● Online & Ready</span>
+                </div>
                 <button onclick="toggleChat()"><i class="fa-solid fa-xmark text-gray-400"></i></button>
             </div>
-            <div id="chatContent" class="flex-1 p-4 overflow-y-auto text-[10px] space-y-4 font-bold text-gray-300">
-                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10">Salam! Main Khan AI hun. Aapka exam kaisa chal raha hai?</div>
+            <div id="chatContent" class="flex-1 p-4 overflow-y-auto text-[10px] space-y-4 font-bold text-gray-300 scroll-smooth">
+                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10 ai-message">Salam bhai! Main Khan Study Hub ka AI Assistant hoon. Padhai, Exam ya Subscription ko lekar kuch bhi pucho, main ekdum solid jawab dunga! 😊</div>
             </div>
-            <div class="p-3 bg-black/50 flex gap-2">
-                <input id="aiInput" type="text" placeholder="Ask anything..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[9px] focus:outline-none">
-                <button onclick="askAI()" class="bg-sky-500 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            <div class="p-3 bg-black/50 flex gap-2 border-t border-white/5">
+                <input id="aiInput" type="text" placeholder="Padhai ke bare mein pucho..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[9px] focus:outline-none focus:border-sky-500 transition-all">
+                <button onclick="askAI()" class="bg-sky-500 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all"><i class="fa-solid fa-paper-plane text-xs"></i></button>
             </div>
         </div>
     </div>
@@ -220,11 +225,11 @@
         // Payment Function
         function startPayment() {
             var options = {
-                "key": "rzp_test_PASTE_YOUR_KEY_HERE", // Kal subah yahan apni key paste karna
+                "key": "rzp_test_PASTE_YOUR_KEY_HERE",
                 "amount": "4900", 
                 "name": "KHAN STUDY HUB",
                 "description": "Premium Exam Access",
-                "handler": function (response){ alert("Payment Success! ID: " + response.razorpay_payment_id); },
+                "handler": function (response){ alert("Mubarak ho! Payment Success. ID: " + response.razorpay_payment_id); },
                 "prefill": { "name": document.getElementById('userName').innerText },
                 "theme": { "color": "#0ea5e9" }
             };
@@ -232,7 +237,7 @@
             rzp1.open();
         }
 
-        // AI Chat Functions
+        // --- SMART AI SYSTEM ---
         function toggleChat() { document.getElementById('chatBox').classList.toggle('hidden'); }
         
         function askAI() {
@@ -240,19 +245,38 @@
             const content = document.getElementById('chatContent');
             if(input.value.trim() === "") return;
 
-            content.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-sky-500/30 p-2 rounded-xl rounded-tr-none border border-sky-500/40 text-white">${input.value}</div></div>`;
-            const query = input.value.toLowerCase();
+            // Student Message
+            content.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-sky-500/30 p-2 rounded-xl rounded-tr-none border border-sky-500/40 text-white shadow-md">${input.value}</div></div>`;
+            const q = input.value.toLowerCase();
             input.value = "";
+            content.scrollTop = content.scrollHeight;
+
+            // Thinking Effect
+            const thinkId = "think_" + Date.now();
+            content.innerHTML += `<div id="${thinkId}" class="text-[8px] text-sky-400 italic animate-pulse">Khan AI soch raha hai...</div>`;
 
             setTimeout(() => {
-                let reply = "Bhai, ye sawal mast hai! Iska pura detail hamare <b>Premium Notes</b> mein hai. Unlock karein!";
-                if(query.includes("hcf")) reply = "<b>HCF Trick:</b> Prime numbers ka product check karein. Formula: HCF x LCM = Product of Numbers.";
-                if(query.includes("urdu")) reply = "<b>Urdu Guide:</b> Grammar section mein 'Ghazal' aur 'Qawaid' par dhyan dein. Humne special model papers diye hain.";
-                if(query.includes("job")) reply = "<b>Job Alert:</b> Bihar Police ki bampat bharti aa rahi hai. Taiyari shuru rakhein!";
+                document.getElementById(thinkId).remove();
+                let r = "Bhai, ye toh tune bada solid sawal pucha hai! Lekin iska asli maza hamare <b>Premium Viral Papers</b> mein hai. Unlock kiya kya tune?";
 
-                content.innerHTML += `<div class="flex justify-start mb-2"><div class="bg-white/5 p-2 rounded-xl rounded-tl-none border border-white/10"><i class="fa-solid fa-robot text-sky-400 mr-1"></i> ${reply}</div></div>`;
+                // Smart Responses
+                if(q.includes("hcf") || q.includes("math") || q.includes("lcm")) {
+                    r = "Maths se darna nahi hai bhai! HCF aur LCM nikalne ka Prime Factorization method sabse mast hai. BSEB 10th mein ye 2 marks ka pakka aata hai. Hamare Notes mein iski shortcut trick hai, check karo!";
+                } else if(q.includes("urdu") || q.includes("notes") || q.includes("model")) {
+                    r = "Urdu Grammar (Qawaid) ko lekar pareshan mat ho. Humne special model papers taiyar kiye hain jo sidhe exam mein milenge. Bas <b>Unlock Premium</b> karo aur padhna shuru karo!";
+                } else if(q.includes("job") || q.includes("police") || q.includes("vacancy")) {
+                    r = "Sarkari naukri chahiye toh mehnat karni hogi bhai! Bihar Police aur Railway ki vacancy jald aane wali hai. Hamare Job Alerts section ko daily check karte raho.";
+                } else if(q.includes("paisa") || q.includes("pay") || q.includes("subscription") || q.includes("khareed")) {
+                    r = "Bhai sirf ₹49 ki baat hai—ek chai-nashte se bhi kam! Isme tere ko saal bhar ka saara material mil jayega. Upar wale button se payment kar, main turant tere liye sab open kar dunga.";
+                } else if(q.includes("salam") || q.includes("hello") || q.includes("kaise ho")) {
+                    r = "Walaikum Assalam bhai! Main ekdum jhakas hoon. Aapki taiyari kaise chal rahi hai? Board exam mein top karna hai na is baar?";
+                } else if(q.includes("love") || q.includes("shadi") || q.includes("movie")) {
+                    r = "Arre bhai! Ye sab baatein baad mein karenge. Abhi focus sirf Padhai aur Career par rakhte hain. Khan Study Hub par aaye ho toh kuch ban kar hi nikalna! 🚀";
+                }
+
+                content.innerHTML += `<div class="flex justify-start mb-2 ai-message"><div class="bg-white/5 p-2 rounded-xl rounded-tl-none border border-white/10"><i class="fa-solid fa-robot text-sky-400 mr-1"></i> ${r}</div></div>`;
                 content.scrollTop = content.scrollHeight;
-            }, 1000);
+            }, 1200);
         }
     </script>
 </body>

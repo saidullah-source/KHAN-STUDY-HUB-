@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KHAN STUDY HUB | All-in-One Portal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,29 +12,29 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Plus+Jakarta+Sans:wght@400;800&display=swap');
         
-        body { background: #00020a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        body { background: #00020a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; width: 100%; }
         
-        .neon-brand { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 20px #0ea5e9; background: linear-gradient(to right, #fff, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .neon-brand { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 15px #0ea5e9; background: linear-gradient(to right, #fff, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        /* Mobile Friendly Animations */
         @keyframes float-glow {
-            0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 0 25px #0ea5e9; }
-            50% { transform: translateY(-25px) scale(1.05); box-shadow: 0 0 60px #38bdf8; }
+            0%, 100% { transform: translateY(0); box-shadow: 0 0 15px #0ea5e9; }
+            50% { transform: translateY(-10px); box-shadow: 0 0 30px #38bdf8; }
         }
-        .login-btn-animate {
-            animation: float-glow 3s ease-in-out infinite;
-            background: linear-gradient(45deg, #0ea5e9, #2563eb);
-            border: 2px solid #ffffff44;
-        }
+        .login-btn-animate { animation: float-glow 3s ease-in-out infinite; background: linear-gradient(45deg, #0ea5e9, #2563eb); }
 
-        .ticker-container { background: linear-gradient(90deg, #0ea5e9, #1e40af); border-bottom: 4px solid #38bdf8; position: relative; z-index: 100; }
-        .ticker-move { display: inline-block; white-space: nowrap; animation: ticker 55s linear infinite; font-weight: 900; letter-spacing: 1px; }
+        .ticker-container { background: linear-gradient(90deg, #0ea5e9, #1e40af); overflow: hidden; white-space: nowrap; }
+        .ticker-move { display: inline-block; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
-        .feature-icon-img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 0 5px #0ea5e9); }
-        .hidden { display: none; }
-        .ai-message { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* AI Chat Position Fix for Mobile */
+        #aiChat { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        #chatBox { position: fixed; bottom: 90px; right: 20px; width: 85vw; max-width: 350px; height: 70vh; max-height: 500px; }
+
+        /* Prevent Zoom on Inputs (iOS fix) */
+        input[type="text"] { font-size: 16px !important; }
     </style>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -60,14 +60,16 @@
         window.logout = () => signOut(auth);
 
         onAuthStateChanged(auth, (user) => {
+            const guest = document.getElementById('guestView');
+            const member = document.getElementById('memberView');
             if (user) {
-                document.getElementById('guestView').classList.add('hidden');
-                document.getElementById('memberView').classList.remove('hidden');
+                guest.style.display = 'none';
+                member.style.display = 'block';
                 document.getElementById('userName').innerText = user.displayName;
                 document.getElementById('navUser').classList.remove('hidden');
             } else {
-                document.getElementById('guestView').classList.remove('hidden');
-                document.getElementById('memberView').classList.add('hidden');
+                guest.style.display = 'block';
+                member.style.display = 'none';
                 document.getElementById('navUser').classList.add('hidden');
             }
         });
@@ -75,209 +77,160 @@
 </head>
 <body>
 
-    <div class="ticker-container py-3">
-        <div class="ticker-move uppercase text-sm">
-            ⭐ WELCOME TO KHAN STUDY HUB • 📚 CLASS 1 TO 12: ALL BOARDS (BSEB, UP, CBSE) NOTES • 🏆 100% EXAM SELECTION GUARANTEE • 👮 SABHI JOBS KI TAIYARI • 🤖 AI-GENERATED VIRAL QUIZZES • 🌙 URDU SPECIAL MODEL PAPERS • 🎯 VIRAL QUESTIONS JO SIDHE EXAM MEIN AYENGE • 👥 TRUSTED BY 1 LAKH+ STUDENTS ⭐
+    <div class="ticker-container py-2">
+        <div class="ticker-move uppercase text-[10px] font-bold">
+            ⭐ KHAN STUDY HUB: BSEB CLASS 10th & 12th SPECIAL NOTES • VIRAL QUESTIONS • GOVT JOB UPDATES ⭐
         </div>
     </div>
 
-    <nav class="p-5 flex justify-between items-center glass-card sticky top-0 z-50 px-8">
-        <div class="text-2xl font-black neon-brand tracking-tighter uppercase">KHAN STUDY HUB</div>
-        <div id="navUser" class="hidden flex items-center gap-4">
-            <span id="userName" class="text-xs font-bold text-sky-400"></span>
-            <button onclick="logout()" class="text-[10px] bg-red-600 font-black px-4 py-2 rounded-full">EXIT</button>
+    <nav class="p-4 flex justify-between items-center glass-card sticky top-0 z-50">
+        <div class="text-lg font-black neon-brand uppercase">KHAN HUB</div>
+        <div id="navUser" class="hidden flex items-center gap-2">
+            <span id="userName" class="text-[10px] font-bold text-sky-400"></span>
+            <button onclick="logout()" class="text-[9px] bg-red-600 px-3 py-1 rounded-full font-bold">EXIT</button>
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto text-center pt-8 px-6 pb-24">
-        
-        <div id="shayariBox" class="text-lg md:text-xl italic text-sky-300 mb-6 min-h-[50px]">
-            "Mehnat itni khamoshi se karo ki kamyabi shor macha de!"
-        </div>
+    <main class="max-w-4xl mx-auto text-center px-4 pt-6 pb-20">
+        <div id="shayariBox" class="text-sm italic text-sky-300 mb-4 min-h-[40px]">"Koshish karne walon ki kabhi haar nahi hoti."</div>
 
-        <div class="h-20 mb-10">
-            <h1 class="text-4xl md:text-6xl font-black">
-                Success Karein <br><span id="typed" class="text-sky-500"></span>
-            </h1>
+        <div class="min-h-[80px]">
+            <h1 class="text-3xl font-black mb-2">Success Karein <br><span id="typed" class="text-sky-500"></span></h1>
         </div>
 
         <div id="guestView">
-            <div class="mb-20">
-                <button onclick="login()" class="login-btn-animate px-12 py-7 rounded-3xl text-white font-black text-2xl uppercase tracking-widest">
-                    <i class="fa-brands fa-google mr-3"></i> LOGIN TO START
-                </button>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
-                <div class="glass-card p-6 rounded-3xl border-b-4 border-sky-500">
-                    <i class="fa-solid fa-users text-sky-500 text-3xl mb-2"></i>
-                    <p class="text-xl font-black">1 Lakh+</p>
-                    <p class="text-[9px] uppercase font-bold text-gray-500">Students Trust</p>
-                </div>
-                <div class="glass-card p-6 rounded-3xl border-b-4 border-green-500">
-                    <i class="fa-solid fa-headset text-green-500 text-3xl mb-2"></i>
-                    <p class="text-xl font-black">24/7 AI</p>
-                    <p class="text-[9px] uppercase font-bold text-gray-500">Expert Support</p>
-                </div>
-                <div class="glass-card p-6 rounded-3xl border-b-4 border-orange-500">
-                    <i class="fa-solid fa-trophy text-orange-500 text-3xl mb-2"></i>
-                    <p class="text-xl font-black">100%</p>
-                    <p class="text-[9px] uppercase font-bold text-gray-500">Selection Guarantee</p>
-                </div>
-                <div class="glass-card p-6 rounded-3xl border-b-4 border-purple-500">
-                    <i class="fa-solid fa-microchip text-purple-500 text-3xl mb-2"></i>
-                    <p class="text-xl font-black">100% AI</p>
-                    <p class="text-[9px] uppercase font-bold text-gray-500">Exam Related Content</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="memberView" class="hidden space-y-6 mb-12 animate-fade-in">
-            <button onclick="startPayment()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 p-5 rounded-[2rem] font-black text-xl text-black shadow-lg transform hover:scale-105 transition">
-                👑 UNLOCK PREMIUM ACCESS 👑
+            <button onclick="login()" class="login-btn-animate w-full max-w-xs py-5 rounded-2xl text-white font-black text-xl uppercase mb-10">
+                <i class="fa-brands fa-google mr-2"></i> LOGIN START
             </button>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="glass-card p-6 rounded-[2rem] text-left border-l-4 border-sky-500">
-                    <h3 class="font-bold text-sky-400 mb-2 uppercase">Viral Papers</h3>
-                    <p class="text-[10px] text-gray-400 font-bold">BSEB, UP & Urdu Special Content Available.</p>
+
+            <div class="grid grid-cols-2 gap-3 mb-10">
+                <div class="glass-card p-4 rounded-2xl">
+                    <i class="fa-solid fa-users text-sky-500 text-2xl mb-1"></i>
+                    <p class="text-sm font-black">1 Lakh+</p>
+                    <p class="text-[8px] uppercase text-gray-500">Students</p>
                 </div>
-                <div class="glass-card p-6 rounded-[2rem] text-left border-l-4 border-green-500">
-                    <h3 class="font-bold text-green-400 mb-2 uppercase">Govt Jobs</h3>
-                    <p class="text-[10px] text-gray-400 font-bold">Daily Vacancy & Current Affairs Updates.</p>
+                <div class="glass-card p-4 rounded-2xl">
+                    <i class="fa-solid fa-trophy text-orange-500 text-2xl mb-1"></i>
+                    <p class="text-sm font-black">100%</p>
+                    <p class="text-[8px] uppercase text-gray-500">Selection</p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-12 border-t border-white/5">
-            <div class="glass-card p-5 rounded-3xl flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" class="feature-icon-img">
-                <span class="text-[9px] font-black uppercase text-sky-400">All Boards</span>
-            </div>
-            <div class="glass-card p-5 rounded-3xl flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/1162/1162456.png" class="feature-icon-img">
-                <span class="text-[9px] font-black uppercase text-orange-500">Viral Paper</span>
-            </div>
-            <div class="glass-card p-5 rounded-3xl flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png" class="feature-icon-img">
-                <span class="text-[9px] font-black uppercase text-purple-400">AI Smart Quiz</span>
-            </div>
-            <div class="glass-card p-5 rounded-3xl flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" class="feature-icon-img">
-                <span class="text-[9px] font-black uppercase text-red-500">Short Notes</span>
-            </div>
-            <div class="glass-card p-5 rounded-3xl flex flex-col items-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3858/3858693.png" class="feature-icon-img">
-                <span class="text-[9px] font-black uppercase text-green-500">Job Alerts</span>
+        <div id="memberView" class="hidden space-y-4 mb-10">
+            <button onclick="startPayment()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 p-4 rounded-2xl font-black text-lg text-black shadow-lg">
+                👑 UNLOCK ALL PREMIUM 👑
+            </button>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="glass-card p-4 rounded-2xl text-left border-l-4 border-sky-500">
+                    <h3 class="font-bold text-sky-400 text-sm uppercase">Viral Papers</h3>
+                    <p class="text-[10px] text-gray-400">BSEB 10th & Urdu Special Papers.</p>
+                </div>
+                <div class="glass-card p-4 rounded-2xl text-left border-l-4 border-green-500">
+                    <h3 class="font-bold text-green-400 text-sm uppercase">Job Alerts</h3>
+                    <p class="text-[10px] text-gray-400">Bihar Police & SSC Daily Updates.</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="aiChat" class="fixed bottom-6 right-6 z-[100]">
-        <button onclick="toggleChat()" class="bg-gradient-to-tr from-sky-500 to-purple-600 w-14 h-14 rounded-full shadow-lg flex items-center justify-center border-2 border-white/20 animate-bounce">
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-2 border-t border-white/10 pt-6">
+            <div class="glass-card p-3 rounded-xl flex flex-col items-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" class="w-8 h-8 mb-1">
+                <span class="text-[7px] font-black uppercase text-sky-400 text-center">Boards</span>
+            </div>
+            <div class="glass-card p-3 rounded-xl flex flex-col items-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/1162/1162456.png" class="w-8 h-8 mb-1">
+                <span class="text-[7px] font-black uppercase text-orange-400 text-center">Viral Paper</span>
+            </div>
+            <div class="glass-card p-3 rounded-xl flex flex-col items-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/3858/3858693.png" class="w-8 h-8 mb-1">
+                <span class="text-[7px] font-black uppercase text-green-400 text-center">Jobs</span>
+            </div>
+        </div>
+    </main>
+
+    <div id="aiChat">
+        <button onclick="toggleChat()" class="bg-gradient-to-tr from-sky-500 to-purple-600 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center border-2 border-white/20 animate-bounce">
             <i class="fa-solid fa-robot text-xl text-white"></i>
         </button>
-        <div id="chatBox" class="hidden absolute bottom-16 right-0 w-72 h-96 glass-card rounded-[2rem] overflow-hidden flex flex-col border border-sky-500/30 shadow-2xl">
+        <div id="chatBox" class="hidden glass-card rounded-3xl overflow-hidden flex flex-col border border-sky-500/30 shadow-2xl">
             <div class="bg-sky-500/20 p-4 flex justify-between items-center border-b border-white/5">
-                <div class="flex flex-col">
-                    <span class="font-black text-[10px] uppercase tracking-widest text-sky-400">Khan AI Expert</span>
-                    <span class="text-[7px] text-green-400">● Online & Ready</span>
-                </div>
+                <span class="font-black text-[10px] uppercase text-sky-400 tracking-tighter">Khan Smart AI</span>
                 <button onclick="toggleChat()"><i class="fa-solid fa-xmark text-gray-400"></i></button>
             </div>
-            <div id="chatContent" class="flex-1 p-4 overflow-y-auto text-[10px] space-y-4 font-bold text-gray-300 scroll-smooth">
-                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10 ai-message">Salam bhai! Main Khan Study Hub ka AI Assistant hoon. Padhai, Exam ya Subscription ko lekar kuch bhi pucho, main ekdum solid jawab dunga! 😊</div>
+            <div id="chatContent" class="flex-1 p-4 overflow-y-auto text-[11px] space-y-4 scroll-smooth">
+                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10">Salam bhai! Main Khan Hub ka 100% AI Assistant hoon. Padhai se lekar Paiso tak, kuch bhi pucho!</div>
             </div>
-            <div class="p-3 bg-black/50 flex gap-2 border-t border-white/5">
-                <input id="aiInput" type="text" placeholder="Padhai ke bare mein pucho..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[9px] focus:outline-none focus:border-sky-500 transition-all">
-                <button onclick="askAI()" class="bg-sky-500 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            <div class="p-3 bg-black/80 flex gap-2 border-t border-white/10">
+                <input id="aiInput" type="text" placeholder="Type here..." class="flex-1 bg-white/5 border border-white/20 rounded-full px-4 py-2 text-white outline-none">
+                <button onclick="askAI()" class="bg-sky-500 w-9 h-9 rounded-full flex items-center justify-center"><i class="fa-solid fa-paper-plane text-xs"></i></button>
             </div>
         </div>
     </div>
 
-    <footer class="py-8 text-center text-gray-800 text-[10px] font-black tracking-widest">
-        &copy; 2026 KHAN STUDY HUB | THE FUTURE OF EDUCATION
-    </footer>
-
     <script>
-        // Typing Animation
-        var typed = new Typed('#typed', {
-            strings: ['Sabhi Board Exams Mein', 'Sabhi Sarkari Jobs Mein', 'Urdu Model Papers Se', '100% Selection Ke Sath'],
-            typeSpeed: 60,
-            backSpeed: 40,
-            loop: true
+        // Typing Config
+        new Typed('#typed', {
+            strings: ['Board Exams Mein', 'Sarkari Jobs Mein', 'Urdu Papers Se'],
+            typeSpeed: 50, backSpeed: 30, loop: true
         });
 
-        // Shayari Logic
-        const shayaris = [
-            "Manzil unhi ko milti hai, jinke sapno mein jaan hoti hai.",
-            "Waqt badalta hai, phir badlega, saara jahan apna hoga.",
-            "Mehnat itni khamoshi se karo ki kamyabi shor macha de!",
-            "Mushkilein dil ke irade azmati hain, daro mat aage badho."
-        ];
-        let s = 0;
-        setInterval(() => {
-            s = (s + 1) % shayaris.length;
-            const box = document.getElementById('shayariBox');
-            box.style.opacity = 0;
-            setTimeout(() => { box.innerText = `"${shayaris[s]}"`; box.style.opacity = 1; }, 500);
-        }, 5000);
-
-        // Payment Function
+        // Payment Config
         function startPayment() {
             var options = {
                 "key": "rzp_test_PASTE_YOUR_KEY_HERE",
-                "amount": "4900", 
-                "name": "KHAN STUDY HUB",
-                "description": "Premium Exam Access",
-                "handler": function (response){ alert("Mubarak ho! Payment Success. ID: " + response.razorpay_payment_id); },
-                "prefill": { "name": document.getElementById('userName').innerText },
+                "amount": "4900", "name": "KHAN STUDY HUB",
+                "handler": function (r){ alert("Success! ID: " + r.razorpay_payment_id); },
                 "theme": { "color": "#0ea5e9" }
             };
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
+            new Razorpay(options).open();
         }
 
-        // --- SMART AI SYSTEM ---
+        // --- 100% SMART AI SYSTEM ---
         function toggleChat() { document.getElementById('chatBox').classList.toggle('hidden'); }
         
-        function askAI() {
+        async function askAI() {
             const input = document.getElementById('aiInput');
             const content = document.getElementById('chatContent');
-            if(input.value.trim() === "") return;
+            if(!input.value.trim()) return;
 
-            // Student Message
-            content.innerHTML += `<div class="flex justify-end mb-2"><div class="bg-sky-500/30 p-2 rounded-xl rounded-tr-none border border-sky-500/40 text-white shadow-md">${input.value}</div></div>`;
-            const q = input.value.toLowerCase();
+            const userText = input.value;
+            content.innerHTML += `<div class="flex justify-end"><div class="bg-sky-500 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-lg">${userText}</div></div>`;
             input.value = "";
             content.scrollTop = content.scrollHeight;
 
-            // Thinking Effect
-            const thinkId = "think_" + Date.now();
-            content.innerHTML += `<div id="${thinkId}" class="text-[8px] text-sky-400 italic animate-pulse">Khan AI soch raha hai...</div>`;
+            // AI THINKING
+            const loading = document.createElement('div');
+            loading.className = "text-sky-400 italic text-[9px] animate-pulse";
+            loading.innerText = "Khan AI is analyzing...";
+            content.appendChild(loading);
 
             setTimeout(() => {
-                document.getElementById(thinkId).remove();
-                let r = "Bhai, ye toh tune bada solid sawal pucha hai! Lekin iska asli maza hamare <b>Premium Viral Papers</b> mein hai. Unlock kiya kya tune?";
-
-                // Smart Responses
-                if(q.includes("hcf") || q.includes("math") || q.includes("lcm")) {
-                    r = "Maths se darna nahi hai bhai! HCF aur LCM nikalne ka Prime Factorization method sabse mast hai. BSEB 10th mein ye 2 marks ka pakka aata hai. Hamare Notes mein iski shortcut trick hai, check karo!";
-                } else if(q.includes("urdu") || q.includes("notes") || q.includes("model")) {
-                    r = "Urdu Grammar (Qawaid) ko lekar pareshan mat ho. Humne special model papers taiyar kiye hain jo sidhe exam mein milenge. Bas <b>Unlock Premium</b> karo aur padhna shuru karo!";
-                } else if(q.includes("job") || q.includes("police") || q.includes("vacancy")) {
-                    r = "Sarkari naukri chahiye toh mehnat karni hogi bhai! Bihar Police aur Railway ki vacancy jald aane wali hai. Hamare Job Alerts section ko daily check karte raho.";
-                } else if(q.includes("paisa") || q.includes("pay") || q.includes("subscription") || q.includes("khareed")) {
-                    r = "Bhai sirf ₹49 ki baat hai—ek chai-nashte se bhi kam! Isme tere ko saal bhar ka saara material mil jayega. Upar wale button se payment kar, main turant tere liye sab open kar dunga.";
-                } else if(q.includes("salam") || q.includes("hello") || q.includes("kaise ho")) {
-                    r = "Walaikum Assalam bhai! Main ekdum jhakas hoon. Aapki taiyari kaise chal rahi hai? Board exam mein top karna hai na is baar?";
-                } else if(q.includes("love") || q.includes("shadi") || q.includes("movie")) {
-                    r = "Arre bhai! Ye sab baatein baad mein karenge. Abhi focus sirf Padhai aur Career par rakhte hain. Khan Study Hub par aaye ho toh kuch ban kar hi nikalna! 🚀";
+                loading.remove();
+                let reply = "Bhai, ye sawal toh mast hai! Iska pura solution hamare <b>Premium Section</b> mein update ho gaya hai. Check kiya kya tune?";
+                
+                const q = userText.toLowerCase();
+                // SMART KNOWLEDGE BASE
+                if(q.includes("hcf") || q.includes("lcm")) {
+                    reply = "<b>HCF/LCM Solution:</b> Bhai, agar 10th Matric mein ho toh yaad rakho: Product of two numbers = HCF × LCM. HCF hamesha factors mein common nikal ke hota hai. Iska detail video aur notes humne 'Viral Paper' section mein dala hai!";
+                } else if(q.includes("urdu")) {
+                    reply = "<b>Urdu Special:</b> Urdu Qawaid (Grammar) mein 'Ism' aur 'Zameer' se 5 sawal pakke aate hain. Bihar board ka 2026 ka model paper humne upload kar diya hai. Subscription le lo, pura download kar paoge.";
+                } else if(q.includes("job") || q.includes("police")) {
+                    reply = "<b>Job Alert:</b> Bihar Police Constable ka naya notification jald aane wala hai. Daily 2 ghanta math aur science padho. Hum daily updates 'Job Alerts' mein dete hain.";
+                } else if(q.includes("paisa") || q.includes("payment")) {
+                    r = "Bhai, sirf ₹49 hai. Ek bar pay karo aur exam tak tension free ho jao. UPI, GPay sab chalta hai. Upar wale Gold button par click karo!";
+                } else if(q.includes("kaise ho") || q.includes("salam")) {
+                    reply = "Walaikum Assalam bhai! Main ekdum fit hoon aur aapki madad ke liye taiyar hoon. Aaj padhai mein kya help chahiye?";
                 }
 
-                content.innerHTML += `<div class="flex justify-start mb-2 ai-message"><div class="bg-white/5 p-2 rounded-xl rounded-tl-none border border-white/10"><i class="fa-solid fa-robot text-sky-400 mr-1"></i> ${r}</div></div>`;
+                content.innerHTML += `<div class="flex justify-start"><div class="bg-white/10 p-3 rounded-2xl rounded-tl-none border border-white/10 max-w-[85%] text-gray-200">🤖 <b>KHAN AI:</b><br>${reply}</div></div>`;
                 content.scrollTop = content.scrollHeight;
-            }, 1200);
+            }, 1000);
         }
+
+        // Shayari Loop
+        const shayaris = ["Manzil unhi ko milti hai, jinke sapno mein jaan hoti hai.", "Mehnat itni khamoshi se karo ki kamyabi shor macha de!"];
+        let s = 0; setInterval(() => { s = (s+1)%2; document.getElementById('shayariBox').innerText = `"${shayaris[s]}"`; }, 5000);
     </script>
 </body>
 </html>
